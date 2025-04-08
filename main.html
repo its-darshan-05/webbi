@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Product Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .container {
+      padding: 20px;
+    }
+    input, button, textarea {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .product {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .product img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .otp-section {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Product Store</h1>
+  </header>
+
+  <div class="container">
+    <div id="login-section">
+      <h2>Login</h2>
+      <input type="text" id="phone" placeholder="Enter phone number">
+      <button onclick="sendOTP()">Send OTP</button>
+    </div>
+
+    <div class="otp-section" id="otp-section">
+      <input type="text" id="otp" placeholder="Enter OTP">
+      <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+
+    <div id="admin-panel" style="display: none">
+      <h2>Add Product</h2>
+      <input type="text" id="productName" placeholder="Product Name">
+      <textarea id="productDesc" placeholder="Description"></textarea>
+      <input type="file" id="productImage">
+      <button onclick="addProduct()">Add Product</button>
+      <div class="product-list" id="productList"></div>
+    </div>
+  </div>
+
+  <script>
+    let generatedOTP = '';
+
+    function sendOTP() {
+      const phone = document.getElementById('phone').value;
+      if (!phone.match(/^\d{10}$/)) {
+        alert("Enter valid 10-digit phone number");
+        return;
+      }
+      generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+      alert("Your OTP is: " + generatedOTP);
+      document.getElementById('otp-section').style.display = 'block';
+    }
+
+    function verifyOTP() {
+      const enteredOTP = document.getElementById('otp').value;
+      if (enteredOTP === generatedOTP) {
+        alert("Login successful!");
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('otp-section').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+      } else {
+        alert("Invalid OTP");
+      }
+    }
+
+    function addProduct() {
+      const name = document.getElementById('productName').value;
+      const desc = document.getElementById('productDesc').value;
+      const image = document.getElementById('productImage').files[0];
+
+      if (!name || !desc || !image) {
+        alert("Please fill all product fields");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
+        productDiv.innerHTML = `
+          <img src="${e.target.result}" alt="Product">
+          <h3>${name}</h3>
+          <p>${desc}</p>
+          <button onclick="this.parentElement.remove()">Remove</button>
+        `;
+        document.getElementById('productList').appendChild(productDiv);
+      };
+      reader.readAsDataURL(image);
+    }
+  </script>
+</body>
+</html>
